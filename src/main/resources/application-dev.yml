@@ -1,0 +1,13 @@
+spring:
+  config:
+    import:
+      - nacos:user-service.yaml?group=user
+
+  cloud:
+    nacos:
+      config:
+        namespace: dev-namespace-id
+      discovery:
+        namespace: dev-namespace-id
+        metadata:
+          env: dev

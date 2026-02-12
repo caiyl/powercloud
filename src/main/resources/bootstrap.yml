@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: user-service
+  profiles:
+    active: dev
+
+  config:
+    # 新版必须使用 import 方式导入配置
+    import:
+      # 按优先级顺序加载配置
+      - optional:nacos:${spring.application.name}.yaml?refreshEnabled=true
+      - optional:nacos:${spring.application.name}-${spring.profiles.active}.yaml?refreshEnabled=true
+      # 共享配置
+      - optional:nacos:common-config.yaml?refreshEnabled=true&group=COMMON_GROUP
+      - optional:nacos:datasource-config.yaml?refreshEnabled=true&group=MIDDLEWARE_GROUP
+      - optional:nacos:redis-config.yaml?refreshEnabled=true&group=MIDDLEWARE_GROUP
+      - optional:nacos:rocketmq-config.yaml?refreshEnabled=true&group=MIDDLEWARE_GROUP
+      # 扩展配置
+      - optional:nacos:${spring.application.name}-extension.yaml?refreshEnabled=true
