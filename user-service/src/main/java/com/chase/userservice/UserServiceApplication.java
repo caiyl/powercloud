@@ -6,7 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Collections;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +70,43 @@ class TestController {
         return config;
     }
 
+    // 模拟用户数据
+    private static final Map<Long, Map<String, Object>> USERS = new HashMap<>();
+
+    static {
+        Map<String, Object> user1 = new HashMap<>();
+        user1.put("userId", 1L);
+        user1.put("username", "张三");
+        user1.put("email", "zhangsan@example.com");
+        user1.put("phone", "13800138001");
+        user1.put("status", "active");
+        USERS.put(1L, user1);
+
+        Map<String, Object> user2 = new HashMap<>();
+        user2.put("userId", 2L);
+        user2.put("username", "李四");
+        user2.put("email", "lisi@example.com");
+        user2.put("phone", "13800138002");
+        user2.put("status", "active");
+        USERS.put(2L, user2);
+    }
+
+    /**
+     * 根据用户ID获取用户信息
+     */
+    @GetMapping("/users/{userId}")
+    public Map<String, Object> getUserById(@PathVariable("userId") Long userId) {
+        return USERS.getOrDefault(userId, Collections.emptyMap());
+    }
+
+    /**
+     * 验证用户是否存在
+     */
+    @GetMapping("/users/{userId}/exists")
+    public boolean checkUserExists(@PathVariable("userId") Long userId) {
+        return USERS.containsKey(userId);
+    }
+
     /**
      * 欢迎页面
      */
@@ -74,6 +114,12 @@ class TestController {
     public String home() {
         return "<h1>欢迎使用用户服务</h1>" +
                 "<p>启动时间: " + new java.util.Date() + "</p>" +
-                "<p>更多接口: <a href='/health'>/health</a>, <a href='/config'>/config</a></p>";
+                "<p>可用接口:</p>" +
+                "<ul>" +
+                "<li><a href='/health'>/health</a> - 健康检查</li>" +
+                "<li><a href='/config'>/config</a> - 配置信息</li>" +
+                "<li><a href='/users/1'>/users/{userId}</a> - 获取用户信息</li>" +
+                "<li><a href='/users/1/exists'>/users/{userId}/exists</a> - 验证用户存在</li>" +
+                "</ul>";
     }
 }

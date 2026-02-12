@@ -1,7 +1,7 @@
 spring:
   config:
     import:
-      - optional:nacos:user-service.yaml?group=user
+      - optional:nacos:order-service.yaml?group=user
 
   cloud:
     nacos:

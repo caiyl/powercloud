@@ -1,14 +1,14 @@
 package com.chase.orderservice;
 
+import com.chase.orderservice.client.UserServiceClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -38,6 +38,9 @@ public class OrderServiceApplication {
 @RestController
 @RefreshScope
 class OrderController {
+
+    @Autowired
+    private UserServiceClient userServiceClient;
 
     @Value("${spring.application.name:order-service}")
     private String applicationName;
@@ -103,6 +106,52 @@ class OrderController {
     }
 
     /**
+     * 用户创建订单
+     * 跨服务调用：验证用户存在后创建订单
+     */
+    @PostMapping("/orders/create")
+    public Map<String, Object> createUserOrder(@RequestParam Long userId, 
+                                              @RequestParam String productName,
+                                              @RequestParam BigDecimal price,
+                                              @RequestParam Integer quantity) {
+        
+        // 跨服务调用：验证用户是否存在
+        boolean userExists = userServiceClient.checkUserExists(userId);
+        
+        if (!userExists) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "用户不存在");
+            errorResponse.put("userId", userId);
+            return errorResponse;
+        }
+        
+        // 获取用户信息
+        Map<String, Object> userInfo = userServiceClient.getUserById(userId);
+        
+        // 创建订单
+        Map<String, Object> newOrder = new HashMap<>();
+        long orderId = System.currentTimeMillis();
+        newOrder.put("orderId", orderId);
+        newOrder.put("userId", userId);
+        newOrder.put("userName", userInfo.get("username"));
+        newOrder.put("productName", productName);
+        newOrder.put("price", price);
+        newOrder.put("quantity", quantity);
+        newOrder.put("totalAmount", price.multiply(new BigDecimal(quantity)));
+        newOrder.put("status", "待支付");
+        newOrder.put("createTime", new Date());
+        
+        ORDERS.put(orderId, newOrder);
+        
+        Map<String, Object> successResponse = new HashMap<>();
+        successResponse.put("success", true);
+        successResponse.put("message", "订单创建成功");
+        successResponse.put("order", newOrder);
+        return successResponse;
+    }
+
+    /**
      * 创建订单（模拟）
      */
     @GetMapping("/orders/create")
@@ -133,7 +182,8 @@ class OrderController {
                 "<li><a href='/orders'>/orders</a> - 获取所有订单</li>" +
                 "<li><a href='/orders/1'>/orders/{orderId}</a> - 获取指定订单</li>" +
                 "<li><a href='/orders/user/1'>/orders/user/{userId}</a> - 获取用户订单</li>" +
-                "<li><a href='/orders/create'>/orders/create</a> - 创建订单</li>" +
+                "<li><a href='/orders/create'>/orders/create</a> - 创建订单(GET)</li>" +
+                "<li>POST /orders/create - 用户创建订单(需要参数: userId, productName, price, quantity)</li>" +
                 "</ul>";
     }
 }

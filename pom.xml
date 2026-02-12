@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>  <!-- 与 SCA 2025.0.0.0 兼容 -->
+        <version>3.2.5</version>  <!-- 降级以解决兼容性问题 -->
         <relativePath/>
     </parent>
 
