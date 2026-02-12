@@ -6,17 +6,16 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos
-        namespace: dev-namespace-id
+        server-addr: ${nacos.server-addr:localhost:8848}
+        username: ${nacos.username:nacos}
+        password: ${nacos.password:nacos}
+        namespace: ${nacos.namespace:dev-namespace-id}
       config:
-        server-addr: localhost:8848
-        username: nacos
-        password: nacos
-        namespace: dev-namespace-id
-        group: DEFAULT_GROUP
-
+        server-addr: ${nacos.server-addr:localhost:8848}
+        username: ${nacos.username:nacos}
+        password: ${nacos.password:nacos}
+        namespace: ${nacos.namespace:dev-namespace-id}
+        group: ${nacos.group:DEFAULT_GROUP}
 
 logging:
   level:
