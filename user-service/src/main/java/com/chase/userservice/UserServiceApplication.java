@@ -1,4 +1,4 @@
-package com.chase.powercloud;
+package com.chase.userservice;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -19,25 +19,25 @@ import java.util.Map;
  */
 @SpringBootApplication
 @EnableDiscoveryClient  // 启用服务发现（Nacos）
-public class App {
+public class UserServiceApplication {
 
     public static void main(String[] args) {
         // 启动 Spring Boot 应用
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(UserServiceApplication.class, args);
         System.out.println("=================================");
-        System.out.println("PowerCloud 应用启动成功!");
+        System.out.println("用户服务启动成功!");
         System.out.println("=================================");
     }
 }
 
 /**
- * 测试控制器，验证 Nacos 配置中心是否正常工作
+ * 用户服务控制器
  */
 @RestController
 @RefreshScope  // 开启动态刷新
 class TestController {
 
-    @Value("${spring.application.name:powercloud}")
+    @Value("${spring.application.name:user-service}")
     private String applicationName;
 
     @Value("${server.port:8080}")
@@ -72,7 +72,7 @@ class TestController {
      */
     @GetMapping("/")
     public String home() {
-        return "<h1>欢迎使用 PowerCloud 微服务</h1>" +
+        return "<h1>欢迎使用用户服务</h1>" +
                 "<p>启动时间: " + new java.util.Date() + "</p>" +
                 "<p>更多接口: <a href='/health'>/health</a>, <a href='/config'>/config</a></p>";
     }

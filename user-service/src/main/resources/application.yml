@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: user-service
   cloud:
     nacos:
       # 基础连接配置
@@ -32,6 +34,9 @@ spring:
         metadata:
           version: 1.0
           context-path: ${server.servlet.context-path:}
+
+server:
+  port: 8080
 
 logging:
   level:
