@@ -1,48 +1,24 @@
 spring:
   profiles:
-    default: dev
+    active: dev
   application:
     name: user-service
-  config:
-    import:
-      - optional:nacos:
-
   cloud:
     nacos:
-      # 基础连接配置
-      server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
-      username: ${NACOS_USERNAME:nacos}
-      password: ${NACOS_PASSWORD:nacos}
-
-
-      # 配置中心通用设置
-      config:
-        enabled: true
-        namespace: ${NACOS_NAMESPACE:dev-namespace-id}
-        group: ${NACOS_GROUP:DEFAULT_GROUP}
-        file-extension: yaml
-        refresh-enabled: true
-        max-retry: 3
-        config-retry-time: 2000
-        config-long-poll-timeout: 30000
-
-      # 服务发现配置
       discovery:
-        enabled: true
-        namespace: ${spring.cloud.nacos.config.namespace}
-        group: ${spring.cloud.nacos.config.group}
-        service: ${spring.application.name}
-        cluster-name: DEFAULT
-        weight: 1
-        register-enabled: true
-        ip: ${spring.cloud.client.ip-address}
-        port: ${server.port}
-        metadata:
-          version: 1.0
-          context-path: ${server.servlet.context-path:}
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+        namespace: dev-namespace-id
+      config:
+        server-addr: localhost:8848
+        username: nacos
+        password: nacos
+        import-check:
+          enabled: false
+        namespace: dev-namespace-id
+        group: DEFAULT_GROUP
 
-server:
-  port: 8080
 
 logging:
   level:
