@@ -14,8 +14,6 @@ spring:
         server-addr: localhost:8848
         username: nacos
         password: nacos
-        import-check:
-          enabled: false
         namespace: dev-namespace-id
         group: DEFAULT_GROUP
 

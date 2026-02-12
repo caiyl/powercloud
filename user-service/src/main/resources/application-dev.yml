@@ -1,13 +1,12 @@
 spring:
   config:
     import:
-      - optional:nacos:user-service.yaml?group=user
+      - nacos:user-service.yaml?group=user
 
   cloud:
     nacos:
       config:
-        namespace: dev-namespace-id
+        group: user
       discovery:
-        namespace: dev-namespace-id
         metadata:
           env: dev
