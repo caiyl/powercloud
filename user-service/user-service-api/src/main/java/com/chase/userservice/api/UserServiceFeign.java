@@ -1,30 +1,30 @@
-package com.chase.orderservice.client;
+package com.chase.userservice.api;
 
+import com.chase.userservice.dto.UserInfoDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
 /**
- * 用户服务Feign客户端
- * 用于订单服务调用用户服务
+ * 用户服务Feign客户端接口
+ * 定义用户服务对外暴露的API
  *
  * @author chase
  * @date 2026/2/12
  */
 @FeignClient(name = "user-service")
-public interface UserServiceClient {
+public interface UserServiceFeign {
 
     /**
      * 根据用户ID获取用户信息
      * 
      * @param userId 用户ID
-     * @return 用户信息
+     * @return 用户信息DTO
      */
     @GetMapping("/users/{userId}")
-    Map<String, Object> getUserById(@PathVariable("userId") Long userId);
+    UserInfoDTO getUserById(@PathVariable("userId") Long userId);
 
     /**
      * 验证用户是否存在

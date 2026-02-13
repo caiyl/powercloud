@@ -1,6 +1,7 @@
 package com.chase.orderservice;
 
-import com.chase.orderservice.client.UserServiceClient;
+import com.chase.userservice.api.UserServiceFeign;
+import com.chase.userservice.dto.UserInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -14,17 +15,18 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * 订单服务应用启动类
+ * PowerCloud 订单服务应用启动类
  *
  * @author chase
  * @date 2026/2/12
  */
 @SpringBootApplication
 @EnableDiscoveryClient  // 启用服务发现（Nacos）
-@EnableFeignClients    // 启用Feign客户端
+@EnableFeignClients(basePackages = "com.chase.userservice.api")  // 启用Feign客户端扫描
 public class OrderServiceApplication {
 
     public static void main(String[] args) {
+        // 启动 Spring Boot 应用
         SpringApplication.run(OrderServiceApplication.class, args);
         System.out.println("=================================");
         System.out.println("订单服务启动成功!");
@@ -40,7 +42,7 @@ public class OrderServiceApplication {
 class OrderController {
 
     @Autowired
-    private UserServiceClient userServiceClient;
+    private UserServiceFeign userServiceFeign;
 
     @Value("${spring.application.name:order-service}")
     private String applicationName;
@@ -116,7 +118,7 @@ class OrderController {
                                               @RequestParam Integer quantity) {
         
         // 跨服务调用：验证用户是否存在
-        boolean userExists = userServiceClient.checkUserExists(userId);
+        boolean userExists = userServiceFeign.checkUserExists(userId);
         
         if (!userExists) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -127,14 +129,13 @@ class OrderController {
         }
         
         // 获取用户信息
-        Map<String, Object> userInfo = userServiceClient.getUserById(userId);
-        
+        UserInfoDTO userById = userServiceFeign.getUserById(userId);
+
         // 创建订单
         Map<String, Object> newOrder = new HashMap<>();
         long orderId = System.currentTimeMillis();
         newOrder.put("orderId", orderId);
         newOrder.put("userId", userId);
-        newOrder.put("userName", userInfo.get("username"));
         newOrder.put("productName", productName);
         newOrder.put("price", price);
         newOrder.put("quantity", quantity);
